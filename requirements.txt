@@ -1,2 +1,9 @@
+absl-py==1.1.0
+galois==0.0.30
+llvmlite==0.38.1
+numba==0.55.2
 numpy==1.22.4
 ortools==9.3.10497
+protobuf==4.21.2
+typing_extensions==4.3.0
+z3-solver==4.9.1.0

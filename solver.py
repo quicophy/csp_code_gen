@@ -3,9 +3,10 @@ import itertools as it
 from numpy.random import default_rng
 from ortools.sat.python import cp_model
 
+from mindist import minimum_distance
 
 def random_graph(num_qubits, num_stabs, density, rng=default_rng()):
-    """ 
+    """
     Generate a random bipartite graph as a list of stabilizer adjacency.
     Each edge is added with probability `density`.
     """
@@ -70,17 +71,17 @@ class CodeGenerator:
             )
 
     def add_x_and_z_edge_constraints(self, activator, pauli, x, z):
-        """ 
-        Decompose the constraints 
+        """
+        Decompose the constraints
 
-            x == activator AND pauli, 
+            x == activator AND pauli,
             z == activator AND NOT(pauli),
 
         into the constraints
-        
-            Not(x) OR activator, 
-            Not(z) OR activator, 
-            Not(activator) OR x OR z, 
+
+            Not(x) OR activator,
+            Not(z) OR activator,
+            Not(activator) OR x OR z,
             Not(x) OR pauli,
             Not(z) OR NOT(pauli),
         """
@@ -115,11 +116,11 @@ class CodeGenerator:
     def add_and_gate(self, left, right, target):
         """
             Decompose the constraint
-                
-                left AND right == target 
-        
+
+                left AND right == target
+
             into the contraints
-        
+
                 Not(target) OR left,
                 Not(target) OR right,
                 Not(left) OR Not(right) OR target,
@@ -156,7 +157,7 @@ class CodeGenerator:
 
     def both_edges_are_active(self, qubit, stab0, stab1):
         """
-        Add a variable representing that both edges (qubit, stab0) 
+        Add a variable representing that both edges (qubit, stab0)
         and (qubit, stab1) are actives.
         """
         acti0 = self.activator_var(qubit, stab0)
@@ -238,7 +239,7 @@ class CodeGenerator:
 
     def with_balanced_stab_constraint(self):
         """
-        Add the constraint that the numbers of X and Z stabilizers 
+        Add the constraint that the numbers of X and Z stabilizers
         are the same (or differ by at most 1 if the number of stabilizers is odd).
         """
         vars = [self.pauli_var(stab) for stab in range(self.num_stabs)]
@@ -291,6 +292,7 @@ if __name__ == "__main__":
     print(f"It took {solver.WallTime()} seconds")
     if solver.StatusName(status) == "OPTIMAL":
         x_stabs, z_stabs = build_stabilizers(generator, solver)
+        print(f"Minimum distance is {minimum_distance(50, x_stabs, z_stabs)}")
         print()
         print(f"X stabilizers:")
         for s in x_stabs:
